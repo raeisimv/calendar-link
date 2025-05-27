@@ -5,3 +5,4 @@ edition = "2024"
 authors = ["Morteza Raeisi Vanani <raeisimv@outlook.com>"]
 
 [dependencies]
+url = "2.5"
