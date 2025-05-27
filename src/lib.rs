@@ -1,3 +1,4 @@
+mod err;
 mod stringify;
 mod typ;
 
