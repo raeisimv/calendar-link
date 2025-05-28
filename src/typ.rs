@@ -1,17 +1,17 @@
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
-pub struct CalendarEvent<S: AsRef<str>, D: IntoTime, E: IntoEventOrganizer<S>> {
-    pub title: S,
+pub struct CalendarEvent<'a, D: IntoTime, E: IntoEventOrganizer<'a>> {
+    pub title: &'a str,
     pub start: D,
-    pub url: Option<S>,
-    pub uid: Option<S>,
-    pub desc: Option<S>,
+    pub url: Option<&'a str>,
+    pub uid: Option<&'a str>,
+    pub desc: Option<&'a str>,
     pub busy: Option<bool>,
     pub stat: EventStatus,
-    pub r_rule: Option<S>,
-    pub guests: Option<Vec<S>>,
-    pub location: Option<S>,
+    pub r_rule: Option<&'a str>,
+    pub guests: Option<Vec<&'a str>>,
+    pub location: Option<&'a str>,
     pub duration: EventDuration<D>,
     pub organizer: Option<E>,
 }
@@ -34,15 +34,15 @@ pub enum EventStatus {
     Cancelled,
 }
 #[derive(Clone, Debug)]
-pub struct EventOrganizer<S: AsRef<str>> {
-    pub name: S,
-    pub email: S,
+pub struct EventOrganizer<'a> {
+    pub name: &'a str,
+    pub email: &'a str,
 }
-pub trait IntoEventOrganizer<S: AsRef<str>> {
-    fn into_event_organizer(self) -> EventOrganizer<S>;
+pub trait IntoEventOrganizer<'a> {
+    fn into_event_organizer(self) -> EventOrganizer<'a>;
 }
-impl<S: AsRef<str>> IntoEventOrganizer<S> for (S, S) {
-    fn into_event_organizer(self) -> EventOrganizer<S> {
+impl<'a> IntoEventOrganizer<'a> for (&'a str, &'a str) {
+    fn into_event_organizer(self) -> EventOrganizer<'a> {
         EventOrganizer {
             name: self.0,
             email: self.1,
