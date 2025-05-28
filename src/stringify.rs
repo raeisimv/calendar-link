@@ -16,8 +16,11 @@ use url::Url;
 ///
 /// ```
 ///
-pub fn stringify<S: AsRef<str>>(base: S, it: impl IntoIterator<Item = (S, S)>) -> MyResult<String> {
-    let x = Url::parse_with_params(base.as_ref(), it.into_iter())?.to_string();
+pub fn stringify<'a>(
+    base: &'a str,
+    it: impl IntoIterator<Item = (&'a str, &'a str)>,
+) -> MyResult<String> {
+    let x = Url::parse_with_params(base, it.into_iter())?.to_string();
     let x = x.trim_end_matches('?').to_string();
 
     Ok(x)
