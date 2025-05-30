@@ -1,9 +1,9 @@
-use std::time::Instant;
+use crate::time::EventTime;
 
 #[derive(Clone, Debug)]
-pub struct CalendarEvent<'a, D: IntoTime> {
+pub struct CalendarEvent<'a> {
     pub title: &'a str,
-    pub start: D,
+    pub start: EventTime,
     pub url: Option<&'a str>,
     pub uid: Option<&'a str>,
     pub desc: Option<&'a str>,
@@ -12,19 +12,19 @@ pub struct CalendarEvent<'a, D: IntoTime> {
     pub r_rule: Option<&'a str>,
     pub guests: Option<Vec<&'a str>>,
     pub location: Option<&'a str>,
-    pub duration: EventDuration<D>,
+    pub duration: EventDuration,
     pub organizer: Option<EventOrganizer<'a>>,
 }
 
-#[derive(Copy, Clone, Debug)]
-pub enum EventDuration<D> {
+#[derive(Clone, Debug)]
+pub enum EventDuration {
     AllDay,
     OneHour,
     OneAndHalfHours,
     TwoHours,
     Hours(u8),
     Days(u8),
-    EndsAt(D),
+    EndsAt(EventTime),
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -37,13 +37,4 @@ pub enum EventStatus {
 pub struct EventOrganizer<'a> {
     pub name: &'a str,
     pub email: &'a str,
-}
-pub trait IntoTime {
-    fn into_date(self) -> Instant;
-}
-
-impl IntoTime for Instant {
-    fn into_date(self) -> Instant {
-        self
-    }
 }

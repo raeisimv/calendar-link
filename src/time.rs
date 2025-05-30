@@ -1,10 +1,18 @@
 use chrono::{DateTime, Local, Utc};
-use core::fmt::{Display, Formatter};
+use core::{
+    fmt::{Display, Formatter},
+    ops::Add,
+};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum EventTime {
     DateTime(TimeType),
     DateOnly(TimeType),
+}
+impl Default for EventTime {
+    fn default() -> Self {
+        Self::DateTime(Default::default())
+    }
 }
 impl Display for EventTime {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -18,7 +26,7 @@ impl Display for EventTime {
         }
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum TimeType {
     Utc(DateTime<Utc>),
     Local(DateTime<Local>),
@@ -47,7 +55,11 @@ impl TimeType {
         }
     }
 }
-
+impl Default for TimeType {
+    fn default() -> Self {
+        Self::Utc(Utc::now())
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;

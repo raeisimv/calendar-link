@@ -1,7 +1,7 @@
-use crate::{CalendarEvent, IntoTime, MyResult, stringify};
+use crate::{CalendarEvent, MyResult, stringify};
 use std::borrow::Cow;
 
-pub fn google<D: IntoTime>(event: CalendarEvent<D>) -> MyResult<String> {
+pub fn google(event: CalendarEvent) -> MyResult<String> {
     let mut p = vec![
         (Cow::Borrowed("action"), Cow::Borrowed("TEMPLATE")),
         (Cow::Borrowed("text"), Cow::Borrowed(event.title)),
@@ -31,14 +31,13 @@ pub fn google<D: IntoTime>(event: CalendarEvent<D>) -> MyResult<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::EventDuration;
-    use std::time::Instant;
+    use crate::{EventDuration, EventTime};
 
     #[test]
     fn should_create_google_calendar_link() {
         let evt = CalendarEvent {
             title: "The birthday",
-            start: Instant::now(),
+            start: EventTime::default(),
             duration: EventDuration::AllDay,
             url: None,
             uid: None,
