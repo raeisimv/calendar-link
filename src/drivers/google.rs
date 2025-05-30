@@ -37,7 +37,7 @@ mod tests {
     fn should_create_google_calendar_link() {
         let evt = CalendarEvent {
             title: "The birthday",
-            start: EventTime::default(),
+            start: EventTime::fixed_utc(),
             duration: EventDuration::AllDay,
             url: None,
             uid: None,

@@ -1,13 +1,23 @@
 use chrono::{DateTime, Local, Utc};
-use core::{
-    fmt::{Display, Formatter},
-    ops::Add,
-};
+use core::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, Copy)]
 pub enum EventTime {
     DateTime(TimeType),
     DateOnly(TimeType),
+}
+impl EventTime {
+    #[cfg(test)]
+    pub fn fixed_utc_time() -> DateTime<Utc> {
+        let utc_str_z = "2025-05-30T17:51:11Z";
+        chrono::DateTime::parse_from_rfc3339(utc_str_z)
+            .unwrap()
+            .to_utc()
+    }
+    #[cfg(test)]
+    pub fn fixed_utc() -> Self {
+        EventTime::DateTime(TimeType::Utc(Self::fixed_utc_time()))
+    }
 }
 impl Default for EventTime {
     fn default() -> Self {
@@ -66,10 +76,7 @@ mod tests {
 
     #[test]
     fn should_format_utc() {
-        let utc_str_z = "2025-05-30T17:51:11Z";
-        let d = chrono::DateTime::parse_from_rfc3339(utc_str_z)
-            .unwrap()
-            .to_utc();
+        let d = EventTime::fixed_utc_time();
         let x = EventTime::DateTime(TimeType::Utc(d));
         assert_eq!(x.to_string(), "20250530T175111Z");
 
@@ -78,13 +85,9 @@ mod tests {
     }
     #[test]
     fn should_format_local() {
-        let utc_str_z = "2025-05-30T00:00:00Z";
-        let d = chrono::DateTime::parse_from_rfc3339(utc_str_z)
-            .unwrap()
-            .to_utc();
-
+        let d = EventTime::fixed_utc_time();
         let x = EventTime::DateTime(TimeType::Local(d.into()));
-        assert_eq!(x.to_string(), "2025-05-30T03:30:00"); // it may not pass on your system
+        assert_eq!(x.to_string(), "2025-05-30T21:21:11"); // it may not pass on your system
 
         let x = EventTime::DateOnly(TimeType::Local(d.into()));
         assert_eq!(x.to_string(), "20250530");
