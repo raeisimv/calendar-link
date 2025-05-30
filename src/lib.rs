@@ -1,6 +1,7 @@
 mod drivers;
 mod err;
 mod stringify;
+mod time;
 mod typ;
 
 pub use drivers::*;
