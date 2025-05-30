@@ -13,7 +13,7 @@ impl Display for EventTime {
                 write!(f, "{}", x.to_datetime_string())
             }
             EventTime::DateOnly(x) => {
-                write!(f, "{:?}", x.to_date_only_string())
+                write!(f, "{}", x.to_date_only_string())
             }
         }
     }
@@ -45,5 +45,36 @@ impl TimeType {
                 x.format("%Y-%m-%dT%H:%M:%S").to_string()
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_format_utc() {
+        let utc_str_z = "2025-05-30T17:51:11Z";
+        let d = chrono::DateTime::parse_from_rfc3339(utc_str_z)
+            .unwrap()
+            .to_utc();
+        let x = EventTime::DateTime(TimeType::Utc(d));
+        assert_eq!(x.to_string(), "20250530T175111Z");
+
+        let x = EventTime::DateOnly(TimeType::Utc(d));
+        assert_eq!(x.to_string(), "20250530");
+    }
+    #[test]
+    fn should_format_local() {
+        let utc_str_z = "2025-05-30T00:00:00Z";
+        let d = chrono::DateTime::parse_from_rfc3339(utc_str_z)
+            .unwrap()
+            .to_utc();
+
+        let x = EventTime::DateTime(TimeType::Local(d.into()));
+        assert_eq!(x.to_string(), "2025-05-30T03:30:00"); // it may not pass on your system
+
+        let x = EventTime::DateOnly(TimeType::Local(d.into()));
+        assert_eq!(x.to_string(), "20250530");
     }
 }
