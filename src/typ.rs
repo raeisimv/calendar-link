@@ -1,4 +1,5 @@
-use crate::time::EventTime;
+use crate::{time::EventTime, TimeType};
+use chrono::{DateTime, Utc};
 
 #[derive(Clone, Debug)]
 pub struct CalendarEvent<'a> {
@@ -19,14 +20,23 @@ pub struct CalendarEvent<'a> {
 #[derive(Clone, Debug)]
 pub enum EventDuration {
     AllDay,
-    OneHour,
-    OneAndHalfHours,
-    TwoHours,
-    Hours(u8),
-    Days(u8),
+    For(chrono::Duration),
     EndsAt(EventTime),
 }
-
+impl EventDuration {
+    pub fn all_day() -> EventDuration {
+        EventDuration::AllDay
+    }
+    pub fn at(at: DateTime<Utc>) -> EventDuration {
+        EventDuration::EndsAt(EventTime::DateTime(TimeType::Utc(at)))
+    }
+    pub fn ends_at(at: EventTime) -> EventDuration {
+        EventDuration::EndsAt(at)
+    }
+    pub fn with_duration(dur: chrono::Duration) -> EventDuration {
+        EventDuration::For(dur)
+    }
+}
 #[derive(Copy, Clone, Debug)]
 pub enum EventStatus {
     Confirmed,

@@ -1,5 +1,9 @@
-use chrono::{DateTime, Local, Utc};
-use core::fmt::{Display, Formatter};
+use crate::EventDuration;
+use chrono::{DateTime, Duration, Local, Utc};
+use core::{
+    fmt::{Display, Formatter},
+    ops::Add,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub enum EventTime {
@@ -70,6 +74,32 @@ impl Default for TimeType {
         Self::Utc(Utc::now())
     }
 }
+
+impl Add<EventDuration> for EventTime {
+    type Output = EventTime;
+
+    fn add(self, rhs: EventDuration) -> Self::Output {
+        use EventTime::*;
+        use TimeType::*;
+
+        let start = match self {
+            DateTime(x) => x,
+            DateOnly(x) => x,
+        };
+        match start {
+            Utc(x) => match rhs {
+                EventDuration::AllDay => DateTime(Utc(x.add(Duration::days(1)))),
+                EventDuration::For(dur) => DateTime(Utc(x.add(dur))),
+                EventDuration::EndsAt(d) => d,
+            },
+            Local(x) => match rhs {
+                EventDuration::AllDay => DateTime(Local(x.add(Duration::days(1)))),
+                EventDuration::For(dur) => DateTime(Local(x.add(dur))),
+                EventDuration::EndsAt(d) => d,
+            },
+        }
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -91,5 +121,20 @@ mod tests {
 
         let x = EventTime::DateOnly(TimeType::Local(d.into()));
         assert_eq!(x.to_string(), "20250530");
+    }
+    #[test]
+    fn should_sum_up_with_event_duration() {
+        let start = EventTime::fixed_utc();
+        let dur = EventDuration::AllDay;
+        let end = start + dur;
+        assert_eq!(end.to_string(), "20250531T175111Z");
+
+        let dur = EventDuration::For(Duration::hours(1));
+        let end = start + dur;
+        assert_eq!(end.to_string(), "20250530T185111Z");
+
+        let dur = EventDuration::at(EventTime::fixed_utc_time().add(Duration::hours(2)));
+        let end = start + dur;
+        assert_eq!(end.to_string(), "20250530T195111Z");
     }
 }
