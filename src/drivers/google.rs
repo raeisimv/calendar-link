@@ -1,10 +1,14 @@
-use crate::{CalendarEvent, MyResult, stringify};
+use crate::{stringify, CalendarEvent, MyResult};
 use std::borrow::Cow;
 
 pub fn google(event: CalendarEvent) -> MyResult<String> {
     let mut p = vec![
         (Cow::Borrowed("action"), Cow::Borrowed("TEMPLATE")),
         (Cow::Borrowed("text"), Cow::Borrowed(event.title)),
+        (
+            Cow::Borrowed("dates"),
+            Cow::Owned(format!("{}/{}", event.start, event.start + event.duration)),
+        ),
     ];
 
     if let Some(x) = event.desc {
