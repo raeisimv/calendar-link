@@ -1,4 +1,4 @@
-use crate::EventDuration;
+use crate::typ::EventDuration;
 use chrono::{DateTime, Duration, Local, Utc};
 use core::{
     fmt::{Display, Formatter},
@@ -103,6 +103,7 @@ impl Add<EventDuration> for EventTime {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::typ::EventDuration;
 
     #[test]
     fn should_format_utc() {

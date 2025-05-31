@@ -1,4 +1,4 @@
-use crate::MyResult;
+use crate::err::MyResult;
 use url::Url;
 
 /// # Generate URL string
@@ -7,6 +7,7 @@ use url::Url;
 /// ## Example
 /// ```rust
 /// use calendar_link::stringify;
+/// use calendar_link::stringify::stringify;
 /// let x = stringify("https://example.com", [
 ///   ("name", "John Smith"),
 ///   ("age", "27")

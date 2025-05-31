@@ -5,6 +5,8 @@ Rust library to generate an event link for Google Calendar, Yahoo! Calendar, Mic
 ### Example
 
 ```rust
+use calendar_link::prelude::*;
+
 fn main() {
     let date = chrono::DateTime::parse_from_rfc3339("2019-12-29T00:00:00Z").unwrap();
     let evt = CalendarEvent {

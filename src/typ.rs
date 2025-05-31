@@ -1,4 +1,4 @@
-use crate::{time::EventTime, TimeType};
+use crate::time::{EventTime, TimeType};
 use chrono::{DateTime, Utc};
 
 #[derive(Clone, Debug)]

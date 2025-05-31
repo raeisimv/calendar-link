@@ -1,4 +1,6 @@
-use crate::{stringify, CalendarEvent, MyResult};
+use crate::err::MyResult;
+use crate::stringify::stringify;
+use crate::typ::CalendarEvent;
 use std::borrow::Cow;
 
 pub fn google(event: CalendarEvent) -> MyResult<String> {
@@ -35,7 +37,8 @@ pub fn google(event: CalendarEvent) -> MyResult<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{EventDuration, EventTime, TimeType};
+    use crate::time::{EventTime, TimeType};
+    use crate::typ::EventDuration;
     use chrono::Duration;
 
     #[test]
