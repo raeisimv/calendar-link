@@ -13,7 +13,7 @@ pub enum EventTime {
 impl EventTime {
     #[cfg(test)]
     pub fn fixed_utc_time() -> DateTime<Utc> {
-        let utc_str_z = "2025-05-30T17:51:11Z";
+        let utc_str_z = "2019-12-28T12:00:00.000Z";
         chrono::DateTime::parse_from_rfc3339(utc_str_z)
             .unwrap()
             .to_utc()
@@ -108,33 +108,33 @@ mod tests {
     fn should_format_utc() {
         let d = EventTime::fixed_utc_time();
         let x = EventTime::DateTime(TimeType::Utc(d));
-        assert_eq!(x.to_string(), "20250530T175111Z");
+        assert_eq!(x.to_string(), "20191228T120000Z");
 
         let x = EventTime::DateOnly(TimeType::Utc(d));
-        assert_eq!(x.to_string(), "20250530");
+        assert_eq!(x.to_string(), "20191228");
     }
     #[test]
     fn should_format_local() {
         let d = EventTime::fixed_utc_time();
         let x = EventTime::DateTime(TimeType::Local(d.into()));
-        assert_eq!(x.to_string(), "2025-05-30T21:21:11"); // it may not pass on your system
+        assert_eq!(x.to_string(), "2019-12-28T15:30:00"); // it may not pass on your system
 
         let x = EventTime::DateOnly(TimeType::Local(d.into()));
-        assert_eq!(x.to_string(), "20250530");
+        assert_eq!(x.to_string(), "20191228");
     }
     #[test]
     fn should_sum_up_with_event_duration() {
         let start = EventTime::fixed_utc();
         let dur = EventDuration::AllDay;
         let end = start + dur;
-        assert_eq!(end.to_string(), "20250531T175111Z");
+        assert_eq!(end.to_string(), "20191229T120000Z");
 
         let dur = EventDuration::For(Duration::hours(1));
         let end = start + dur;
-        assert_eq!(end.to_string(), "20250530T185111Z");
+        assert_eq!(end.to_string(), "20191228T130000Z");
 
         let dur = EventDuration::at(EventTime::fixed_utc_time().add(Duration::hours(2)));
         let end = start + dur;
-        assert_eq!(end.to_string(), "20250530T195111Z");
+        assert_eq!(end.to_string(), "20191228T140000Z");
     }
 }
