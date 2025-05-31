@@ -62,17 +62,3 @@ mod tests {
         );
     }
 }
-
-// exports[`google service generate a google link 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20191229T000000Z%2F20191229T020000Z&text=Birthday%20party"`;
-//
-// exports[`google service generate a google link with description 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20191229T000000Z%2F20191229T020000Z&details=Bring%20gifts%21&text=Birthday%20party"`;
-//
-// exports[`google service generate a google link with guests 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&add=hello%40example.com%2Canother%40example.com&dates=20191229T000000Z%2F20191229T020000Z&text=Birthday%20party"`;
-//
-// exports[`google service generate a google link with time & timezone 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20191229T110000Z%2F20191229T130000Z&text=Birthday%20party"`;
-//
-// exports[`google service generate a multi day google link 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20191229%2F20200112&text=Birthday%20party"`;
-//
-// exports[`google service generate a recurring google link 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20191229T000000Z%2F20191229T020000Z&recur=RRULE%3AFREQ%3DYEARLY%3BINTERVAL%3D1&text=Birthday%20party"`;
-//
-// exports[`google service generate an all day google link 1`] = `"https://calendar.google.com/calendar/render?action=TEMPLATE&dates=20191229%2F20191230&text=Birthday%20party"`;
