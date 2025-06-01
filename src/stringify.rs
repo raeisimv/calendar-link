@@ -6,9 +6,9 @@ use url::Url;
 ///
 /// ## Example
 /// ```rust
-/// use calendar_link::stringify;
-/// use calendar_link::stringify::stringify;
-/// let x = stringify("https://example.com", [
+/// use calendar_link::stringify::*;
+///
+/// let x = make_url("https://example.com", [
 ///   ("name", "John Smith"),
 ///   ("age", "27")
 /// ].to_vec()).unwrap();
@@ -17,7 +17,7 @@ use url::Url;
 ///
 /// ```
 ///
-pub fn stringify<'a>(
+pub fn make_url<'a>(
     base: &'a str,
     it: impl IntoIterator<Item = (&'a str, &'a str)>,
 ) -> MyResult<String> {
@@ -33,12 +33,12 @@ mod tests {
 
     #[test]
     fn should_create_url() {
-        let x = stringify("https://example.com", []).unwrap();
+        let x = make_url("https://example.com", []).unwrap();
         assert_eq!(x, "https://example.com/");
     }
     #[test]
     fn should_create_url_with_params() {
-        let x = stringify(
+        let x = make_url(
             "https://example.com",
             [("name", "John Smith"), ("age", "27")].to_vec(),
         )
