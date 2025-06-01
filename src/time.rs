@@ -7,8 +7,8 @@ use core::{
 
 #[derive(Debug, Clone, Copy)]
 pub enum EventTime {
-    DateTime(TimeType),
-    DateOnly(TimeType),
+    Utc(DateTime<Utc>),
+    Local(DateTime<Local>),
 }
 impl EventTime {
     #[cfg(test)]
@@ -20,58 +20,32 @@ impl EventTime {
     }
     #[cfg(test)]
     pub fn fixed_utc() -> Self {
-        EventTime::DateTime(TimeType::Utc(Self::fixed_utc_time()))
+        EventTime::Utc(Self::fixed_utc_time())
+    }
+
+    pub fn format_as_str(&self, date_only: bool) -> String {
+        let fmt = if date_only {
+            "%Y%m%d"
+        } else {
+            match self {
+                EventTime::Utc(_) => "%Y%m%dT%H%M%SZ",
+                EventTime::Local(_) => "%Y-%m-%dT%H:%M:%S",
+            }
+        };
+        match self {
+            EventTime::Utc(x) => x.format(fmt).to_string(),
+            EventTime::Local(x) => x.format(fmt).to_string(),
+        }
     }
 }
 impl Default for EventTime {
     fn default() -> Self {
-        Self::DateTime(Default::default())
+        Self::Utc(Default::default())
     }
 }
 impl Display for EventTime {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            EventTime::DateTime(x) => {
-                write!(f, "{}", x.to_datetime_string())
-            }
-            EventTime::DateOnly(x) => {
-                write!(f, "{}", x.to_date_only_string())
-            }
-        }
-    }
-}
-#[derive(Debug, Clone, Copy)]
-pub enum TimeType {
-    Utc(DateTime<Utc>),
-    Local(DateTime<Local>),
-}
-impl TimeType {
-    pub fn to_date_only_string(&self) -> String {
-        //  allDay: "YYYYMMDD"
-        // Example: "20250530"
-        match self {
-            TimeType::Utc(x) => x.format("%Y%m%d").to_string(),
-            TimeType::Local(x) => x.format("%Y%m%d").to_string(),
-        }
-    }
-    pub fn to_datetime_string(&self) -> String {
-        match self {
-            TimeType::Utc(x) => {
-                // dateTimeUTC: "YYYYMMDD[T]HHmmss[Z]"
-                // Example: "20250530T175111Z" (UTC time)
-                x.format("%Y%m%dT%H%M%SZ").to_string()
-            }
-            TimeType::Local(x) => {
-                // dateTimeLocal: "YYYY-MM-DD[T]HH:mm:ss"
-                // Example: "2025-05-30T19:51:11" (assuming CEST, which is UTC+2)
-                x.format("%Y-%m-%dT%H:%M:%S").to_string()
-            }
-        }
-    }
-}
-impl Default for TimeType {
-    fn default() -> Self {
-        Self::Utc(Utc::now())
+        write!(f, "{}", self.format_as_str(false))
     }
 }
 
@@ -80,26 +54,22 @@ impl Add<EventDuration> for EventTime {
 
     fn add(self, rhs: EventDuration) -> Self::Output {
         use EventTime::*;
-        use TimeType::*;
 
-        let start = match self {
-            DateTime(x) => x,
-            DateOnly(x) => x,
-        };
-        match start {
+        match self {
             Utc(x) => match rhs {
-                EventDuration::AllDay => DateTime(Utc(x.add(Duration::days(1)))),
-                EventDuration::For(dur) => DateTime(Utc(x.add(dur))),
+                EventDuration::AllDay => Utc(x.add(Duration::days(1))),
+                EventDuration::For(dur) => Utc(x.add(dur)),
                 EventDuration::EndsAt(d) => d,
             },
             Local(x) => match rhs {
-                EventDuration::AllDay => DateTime(Local(x.add(Duration::days(1)))),
-                EventDuration::For(dur) => DateTime(Local(x.add(dur))),
+                EventDuration::AllDay => Local(x.add(Duration::days(1))),
+                EventDuration::For(dur) => Local(x.add(dur)),
                 EventDuration::EndsAt(d) => d,
             },
         }
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -108,20 +78,20 @@ mod tests {
     #[test]
     fn should_format_utc() {
         let d = EventTime::fixed_utc_time();
-        let x = EventTime::DateTime(TimeType::Utc(d));
+        let x = EventTime::Utc(d);
         assert_eq!(x.to_string(), "20191228T120000Z");
 
-        let x = EventTime::DateOnly(TimeType::Utc(d));
-        assert_eq!(x.to_string(), "20191228");
+        let x = EventTime::Utc(d);
+        assert_eq!(x.format_as_str(true), "20191228");
     }
     #[test]
     fn should_format_local() {
         let d = EventTime::fixed_utc_time();
-        let x = EventTime::DateTime(TimeType::Local(d.into()));
+        let x = EventTime::Local(d.into());
         assert_eq!(x.to_string(), "2019-12-28T15:30:00"); // it may not pass on your system
 
-        let x = EventTime::DateOnly(TimeType::Local(d.into()));
-        assert_eq!(x.to_string(), "20191228");
+        let x = EventTime::Local(d.into());
+        assert_eq!(x.format_as_str(true), "20191228");
     }
     #[test]
     fn should_sum_up_with_event_duration() {

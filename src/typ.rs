@@ -1,4 +1,4 @@
-use crate::time::{EventTime, TimeType};
+use crate::time::EventTime;
 use chrono::{DateTime, Utc};
 
 #[derive(Clone, Debug)]
@@ -28,13 +28,19 @@ impl EventDuration {
         EventDuration::AllDay
     }
     pub fn at(at: DateTime<Utc>) -> EventDuration {
-        EventDuration::EndsAt(EventTime::DateTime(TimeType::Utc(at)))
+        EventDuration::EndsAt(EventTime::Utc(at))
     }
     pub fn ends_at(at: EventTime) -> EventDuration {
         EventDuration::EndsAt(at)
     }
     pub fn with_duration(dur: chrono::Duration) -> EventDuration {
         EventDuration::For(dur)
+    }
+    pub fn is_all_day(&self) -> bool {
+        match self {
+            EventDuration::AllDay => true,
+            _ => false,
+        }
     }
 }
 #[derive(Copy, Clone, Debug)]
