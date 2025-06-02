@@ -1,5 +1,4 @@
 use crate::time::EventTime;
-use chrono::{DateTime, Utc};
 
 #[derive(Clone, Debug)]
 pub struct CalendarEvent<'a> {
@@ -12,37 +11,12 @@ pub struct CalendarEvent<'a> {
     pub stat: Option<EventStatus>,
     pub r_rule: Option<&'a str>,
     pub guests: Option<Vec<&'a str>>,
+    pub all_day: Option<bool>,
     pub location: Option<&'a str>,
-    pub duration: EventDuration,
+    pub duration: Option<chrono::Duration>,
     pub organizer: Option<EventOrganizer<'a>>,
 }
 
-#[derive(Clone, Debug)]
-pub enum EventDuration {
-    AllDay,
-    For(chrono::Duration),
-    EndsAt(EventTime),
-}
-impl EventDuration {
-    pub fn all_day() -> EventDuration {
-        EventDuration::AllDay
-    }
-    pub fn at(at: DateTime<Utc>) -> EventDuration {
-        EventDuration::EndsAt(EventTime::Utc(at))
-    }
-    pub fn ends_at(at: EventTime) -> EventDuration {
-        EventDuration::EndsAt(at)
-    }
-    pub fn with_duration(dur: chrono::Duration) -> EventDuration {
-        EventDuration::For(dur)
-    }
-    pub fn is_all_day(&self) -> bool {
-        match self {
-            EventDuration::AllDay => true,
-            _ => false,
-        }
-    }
-}
 #[derive(Copy, Clone, Debug)]
 pub enum EventStatus {
     Confirmed,
