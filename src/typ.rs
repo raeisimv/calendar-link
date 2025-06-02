@@ -1,9 +1,11 @@
 use crate::time::EventTime;
+use std::ops::Add;
 
 #[derive(Clone, Debug)]
 pub struct CalendarEvent<'a> {
     pub title: &'a str,
     pub start: EventTime,
+    pub end: Option<EventTime>,
     pub url: Option<&'a str>,
     pub uid: Option<&'a str>,
     pub desc: Option<&'a str>,
@@ -15,6 +17,28 @@ pub struct CalendarEvent<'a> {
     pub location: Option<&'a str>,
     pub duration: Option<chrono::Duration>,
     pub organizer: Option<EventOrganizer<'a>>,
+}
+impl<'a> CalendarEvent<'a> {
+    pub fn end_date(&self) -> EventTime {
+        if let Some(end) = self.end {
+            return end;
+        }
+
+        let dur = if self.all_day.unwrap_or(false) {
+            Some(chrono::Duration::days(1))
+        } else {
+            self.duration
+        };
+
+        if let Some(dur) = dur {
+            match self.start {
+                EventTime::Utc(x) => EventTime::Utc(x.add(dur)),
+                EventTime::Local(x) => EventTime::Local(x.add(dur)),
+            }
+        } else {
+            self.start.clone()
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug)]
