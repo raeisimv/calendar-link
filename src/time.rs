@@ -1,5 +1,6 @@
 use chrono::{DateTime, Local, Utc};
 use core::fmt::{Display, Formatter};
+use std::fmt::Debug;
 
 #[derive(Debug, Clone, Copy)]
 pub enum EventTime {
@@ -20,6 +21,12 @@ impl EventTime {
         EventTime::Utc(Self::fixed_utc_time())
     }
 
+    pub fn is_utc(&self) -> bool {
+        match self {
+            EventTime::Utc(_) => true,
+            EventTime::Local(_) => false,
+        }
+    }
     pub fn format_as_string(&self, format: EventTimeFormat) -> String {
         let fmt = format.as_ref();
         match self {
@@ -34,8 +41,16 @@ impl Default for EventTime {
     }
 }
 impl Display for EventTime {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.format_as_string(EventTimeFormat::DateTimeUtc))
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        if self.is_utc() {
+            write!(f, "{}", self.format_as_string(EventTimeFormat::DateTimeUtc))
+        } else {
+            write!(
+                f,
+                "{}",
+                self.format_as_string(EventTimeFormat::DateTimeLocal)
+            )
+        }
     }
 }
 
