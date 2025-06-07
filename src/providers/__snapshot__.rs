@@ -4,26 +4,6 @@ use chrono::Duration;
 use std::collections::HashMap;
 use std::ops::Add;
 
-pub struct Snapshot {
-    pub models: Vec<CalendarEvent<'static>>,
-    pub cases: HashMap<String, Vec<String>>,
-}
-impl Snapshot {
-    pub fn new() -> Snapshot {
-        let cases = read_snapshot();
-        Self {
-            models: vec![],
-            cases,
-        }
-    }
-    pub fn get(&self, id: &str) -> impl Iterator<Item = &String> {
-        self.cases
-            .get(id)
-            .expect("key not found in case list")
-            .iter()
-    }
-}
-
 pub fn read_snapshot() -> HashMap<String, Vec<String>> {
     let raw = std::fs::read_to_string("__snapshots__/index.spec.ts.snap").expect("Can't read file");
     let mut map = HashMap::new();
@@ -76,12 +56,15 @@ pub fn generate_models<'a>() -> Vec<CalendarEvent<'a>> {
             ..evt.clone()
         },
         CalendarEvent {
-            start: EventTime::Utc(start.add(Duration::hours(11)).into()),
+            start: EventTime::Utc(start.into()),
+            duration: Some(Duration::hours(2).into()),
+            guests: Some(vec!["hello@example.com", "another@example.com"]),
             ..evt.clone()
         },
         CalendarEvent {
-            stat: Some(EventStatus::Confirmed),
-            all_day: Some(true),
+            start: EventTime::Utc(start.add(Duration::hours(11)).into()),
+            // stat: Some(EventStatus::Confirmed),
+            // all_day: Some(true),
             ..evt.clone()
         },
         CalendarEvent {
@@ -95,7 +78,7 @@ pub fn generate_models<'a>() -> Vec<CalendarEvent<'a>> {
             ..evt.clone()
         },
         CalendarEvent {
-            guests: Some(vec!["hello@example.com", "another@example.com"]),
+            all_day: Some(true),
             ..evt.clone()
         },
     ]
