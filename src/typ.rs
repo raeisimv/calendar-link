@@ -39,6 +39,9 @@ impl<'a> CalendarEvent<'a> {
             self.start.clone()
         }
     }
+    pub fn is_all_day(&self) -> bool {
+        self.all_day.unwrap_or(false)
+    }
 }
 
 #[derive(Copy, Clone, Debug)]
