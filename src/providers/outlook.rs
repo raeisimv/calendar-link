@@ -2,6 +2,21 @@ use crate::{err::MyResult, stringify::make_url, time::EventTimeFormat, typ::Cale
 use std::borrow::Cow;
 
 pub fn outlook(event: &CalendarEvent) -> MyResult<String> {
+    let p = set_params(event);
+    make_url(
+        "https://outlook.live.com/calendar/0/action/compose",
+        p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
+    )
+}
+pub fn outlook_mobile(event: &CalendarEvent) -> MyResult<String> {
+    let mut p = set_params(event);
+    make_url(
+        "https://outlook.live.com/calendar/0/deeplink/compose",
+        p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
+    )
+}
+
+fn set_params<'a>(event: &'a CalendarEvent) -> Vec<(Cow<'a, str>, Cow<'a, str>)> {
     let mut p = vec![
         (
             Cow::Borrowed("path"),
@@ -39,10 +54,7 @@ pub fn outlook(event: &CalendarEvent) -> MyResult<String> {
         Cow::Owned(event.is_all_day().to_string()),
     ));
 
-    make_url(
-        "https://outlook.live.com/calendar/0/action/compose",
-        p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
-    )
+    p
 }
 
 #[cfg(test)]
