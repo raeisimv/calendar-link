@@ -9,9 +9,23 @@ pub fn outlook(event: &CalendarEvent) -> MyResult<String> {
     )
 }
 pub fn outlook_mobile(event: &CalendarEvent) -> MyResult<String> {
-    let mut p = set_params(event);
+    let p = set_params(event);
     make_url(
         "https://outlook.live.com/calendar/0/deeplink/compose",
+        p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
+    )
+}
+pub fn office_365(event: &CalendarEvent) -> MyResult<String> {
+    let p = set_params(event);
+    make_url(
+        "https://outlook.office.com/calendar/0/action/compose",
+        p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
+    )
+}
+pub fn office_365_mobile(event: &CalendarEvent) -> MyResult<String> {
+    let p = set_params(event);
+    make_url(
+        "https://outlook.office.com/calendar/0/deeplink/compose",
         p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
 }
