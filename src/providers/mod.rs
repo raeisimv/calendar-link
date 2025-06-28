@@ -4,12 +4,10 @@ mod aol;
 mod google;
 mod msteams;
 mod outlook;
-mod url;
 mod yahoo;
 
 pub use aol::*;
 pub use google::*;
 pub use msteams::*;
 pub use outlook::*;
-pub use url::*;
 pub use yahoo::*;

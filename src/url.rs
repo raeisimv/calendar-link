@@ -31,6 +31,14 @@ impl URL {
         Ok(Self { url })
     }
 }
+
+impl PartialEq for URL {
+    fn eq(&self, other: &Self) -> bool {
+        // TODO: impl param order-insensitive comparison
+        self.url == other.url
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -40,5 +48,13 @@ mod tests {
         let url = "https://test.example.com";
         let act = URL::new(url);
         assert_eq!(act.to_string(), "https://test.example.com");
+    }
+    
+    #[test]
+    fn should_build_url() {
+        let url = "https://test.example.com/dev";
+        let params = [("profile", "test"), ("country", "USA")];
+        let act = URL::try_build(url, params.into_iter()).unwrap();
+        assert_eq!(act.to_string(), "https://test.example.com/dev?profile=test&country=USA");
     }
 }
