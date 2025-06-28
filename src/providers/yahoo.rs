@@ -1,9 +1,4 @@
-use crate::{
-    err::MyResult,
-    time::EventTimeFormat,
-    typ::CalendarEvent,
-    url::URL
-};
+use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
 pub fn yahoo(event: &CalendarEvent) -> MyResult<URL> {

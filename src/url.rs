@@ -4,7 +4,7 @@ use url::Url;
 
 /// ## URL wrapper type
 /// This wrapper provide common functionalities for generating and comparing URLs
-/// 
+///
 #[derive(Clone, Debug)]
 pub struct URL {
     url: String,
@@ -49,12 +49,15 @@ mod tests {
         let act = URL::new(url);
         assert_eq!(act.to_string(), "https://test.example.com");
     }
-    
+
     #[test]
     fn should_build_url() {
         let url = "https://test.example.com/dev";
         let params = [("profile", "test"), ("country", "USA")];
         let act = URL::try_build(url, params.into_iter()).unwrap();
-        assert_eq!(act.to_string(), "https://test.example.com/dev?profile=test&country=USA");
+        assert_eq!(
+            act.to_string(),
+            "https://test.example.com/dev?profile=test&country=USA"
+        );
     }
 }
