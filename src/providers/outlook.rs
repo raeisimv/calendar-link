@@ -1,30 +1,31 @@
-use crate::{err::MyResult, stringify::make_url, time::EventTimeFormat, typ::CalendarEvent};
+use crate::url::URL;
+use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent};
 use std::borrow::Cow;
 
-pub fn outlook(event: &CalendarEvent) -> MyResult<String> {
+pub fn outlook(event: &CalendarEvent) -> MyResult<URL> {
     let p = set_params(event);
-    make_url(
+    URL::try_build(
         "https://outlook.live.com/calendar/0/action/compose",
         p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
 }
-pub fn outlook_mobile(event: &CalendarEvent) -> MyResult<String> {
+pub fn outlook_mobile(event: &CalendarEvent) -> MyResult<URL> {
     let p = set_params(event);
-    make_url(
+    URL::try_build(
         "https://outlook.live.com/calendar/0/deeplink/compose",
         p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
 }
-pub fn office_365(event: &CalendarEvent) -> MyResult<String> {
+pub fn office_365(event: &CalendarEvent) -> MyResult<URL> {
     let p = set_params(event);
-    make_url(
+    URL::try_build(
         "https://outlook.office.com/calendar/0/action/compose",
         p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
 }
-pub fn office_365_mobile(event: &CalendarEvent) -> MyResult<String> {
+pub fn office_365_mobile(event: &CalendarEvent) -> MyResult<URL> {
     let p = set_params(event);
-    make_url(
+    URL::try_build(
         "https://outlook.office.com/calendar/0/deeplink/compose",
         p.iter().rev().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
@@ -75,6 +76,7 @@ fn set_params<'a>(event: &'a CalendarEvent) -> Vec<(Cow<'a, str>, Cow<'a, str>)>
 mod tests {
     use crate::prelude::outlook;
     use crate::providers::__snapshot__::{generate_models, read_snapshot};
+    use crate::url::URL;
 
     #[test]
     fn should_provide_outlook_calendar_link() {
@@ -84,7 +86,7 @@ mod tests {
         for (i, evt) in models.iter().enumerate() {
             let act = outlook(evt).expect("cannot parse outlook event");
             let exp = cases.next().expect("sequence contains no elements");
-            assert_eq!(&act, exp, "failed at index {i}, evt: {evt:?}");
+            assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
         }
     }
 }
