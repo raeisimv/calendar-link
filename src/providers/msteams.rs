@@ -1,7 +1,7 @@
-use crate::{err::MyResult, stringify::make_url, time::EventTimeFormat, typ::CalendarEvent};
+use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
-pub fn msteams(event: &CalendarEvent) -> MyResult<String> {
+pub fn msteams(event: &CalendarEvent) -> MyResult<URL> {
     let mut p = vec![
         (Cow::Borrowed("subject"), Cow::Borrowed(event.title)),
         (
@@ -22,7 +22,7 @@ pub fn msteams(event: &CalendarEvent) -> MyResult<String> {
         p.push((Cow::Borrowed("content"), Cow::Borrowed(x)));
     }
 
-    make_url(
+    URL::try_build(
         "https://teams.microsoft.com/l/meeting/new",
         p.iter().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
@@ -41,7 +41,7 @@ mod tests {
         for (i, evt) in models.iter().enumerate() {
             let act = msteams(evt).expect("cannot parse msteams event");
             let exp = cases.next().expect("sequence contains no elements");
-            assert_eq!(&act, exp, "failed at index {i}, evt: {evt:?}");
+            assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
         }
     }
 }

@@ -1,7 +1,7 @@
-use crate::{err::MyResult, stringify::make_url, time::EventTimeFormat, typ::CalendarEvent};
+use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
-pub fn aol(event: &CalendarEvent) -> MyResult<String> {
+pub fn aol(event: &CalendarEvent) -> MyResult<URL> {
     let mut p = vec![
         (Cow::Borrowed("v"), Cow::Borrowed("60")),
         (Cow::Borrowed("title"), Cow::Borrowed(event.title)),
@@ -33,7 +33,7 @@ pub fn aol(event: &CalendarEvent) -> MyResult<String> {
         p.push((Cow::Borrowed("dur"), Cow::Borrowed("false")));
     }
 
-    make_url(
+    URL::try_build(
         "https://calendar.aol.com",
         p.iter().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
@@ -52,7 +52,7 @@ mod tests {
         for (i, evt) in models.iter().enumerate() {
             let act = aol(evt).expect("cannot parse aol event");
             let exp = cases.next().expect("sequence contains no elements");
-            assert_eq!(&act, exp, "failed at index {i}, evt: {evt:?}");
+            assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
         }
     }
 }

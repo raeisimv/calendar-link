@@ -1,6 +1,10 @@
-use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent };
+use crate::{
+    err::MyResult,
+    time::EventTimeFormat,
+    typ::CalendarEvent,
+    url::URL
+};
 use std::borrow::Cow;
-use crate::url::URL;
 
 pub fn yahoo(event: &CalendarEvent) -> MyResult<URL> {
     let mut p = vec![

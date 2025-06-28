@@ -1,7 +1,7 @@
-use crate::{err::MyResult, stringify::make_url, time::EventTimeFormat, typ::CalendarEvent};
+use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
-pub fn google(event: &CalendarEvent) -> MyResult<String> {
+pub fn google(event: &CalendarEvent) -> MyResult<URL> {
     let mut p = vec![(Cow::Borrowed("action"), Cow::Borrowed("TEMPLATE"))];
 
     if let Some(x) = &event.guests {
@@ -37,7 +37,7 @@ pub fn google(event: &CalendarEvent) -> MyResult<String> {
         p.push((Cow::Borrowed("trp"), Cow::Owned(x.to_string())));
     }
 
-    make_url(
+    URL::try_build(
         "https://calendar.google.com/calendar/render",
         p.iter().map(|(x, y)| (x.as_ref(), y.as_ref())),
     )
@@ -47,6 +47,7 @@ pub fn google(event: &CalendarEvent) -> MyResult<String> {
 mod tests {
     use crate::prelude::google;
     use crate::providers::__snapshot__::{generate_models, read_snapshot};
+    use crate::url::URL;
 
     #[test]
     fn should_provide_google_calendar_link() {
@@ -56,7 +57,7 @@ mod tests {
         for (i, evt) in models.iter().enumerate() {
             let act = google(evt).expect("cannot parse google event");
             let exp = cases.next().expect("sequence contains no elements");
-            assert_eq!(&act, exp, "failed at index {i}, evt: {evt:?}");
+            assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
         }
     }
 }

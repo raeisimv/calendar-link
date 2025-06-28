@@ -1,5 +1,4 @@
-use crate::url::URL;
-use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent};
+use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
 pub fn outlook(event: &CalendarEvent) -> MyResult<URL> {
