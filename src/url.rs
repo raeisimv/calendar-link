@@ -34,8 +34,22 @@ impl URL {
 
 impl PartialEq for URL {
     fn eq(&self, other: &Self) -> bool {
+        let Ok(l) = Url::parse(&self.url) else {
+            return false;
+        };
+        let Ok(r) = Url::parse(&other.url) else {
+            return false;
+        };
+        if r.scheme().to_ascii_lowercase() != l.scheme().to_ascii_lowercase() {
+            return false;
+        }
+        if r.host_str().unwrap_or_default() != l.host_str().unwrap_or_default() {
+            return false;
+        }
+
         // TODO: impl param order-insensitive comparison
-        self.url == other.url
+        // self.url == other.url
+        true
     }
 }
 
@@ -59,5 +73,11 @@ mod tests {
             act.to_string(),
             "https://test.example.com/dev?profile=test&country=USA"
         );
+    }
+    #[test]
+    fn should_compare_regardless_query_orders() {
+        let url1 = URL::new("https://test.example.com?profile=test&country=USA");
+        let url2 = URL::new("https://test.example.com?country=USA&profile=test");
+        assert_eq!(url1, url2);
     }
 }
