@@ -1,5 +1,5 @@
 use crate::err::MyResult;
-use std::fmt::Display;
+use std::{collections::BTreeMap, fmt::Display};
 use url::Url;
 
 /// ## URL wrapper type
@@ -47,9 +47,22 @@ impl PartialEq for URL {
             return false;
         }
 
-        // TODO: impl param order-insensitive comparison
-        // self.url == other.url
-        true
+        let mut map = BTreeMap::new();
+        for (k, v) in r.query_pairs() {
+            map.entry(k.to_string()).or_insert(v);
+        }
+        for (k, v) in l.query_pairs() {
+            let Some(val) = map.get(k.as_ref()) else {
+                return false;
+            };
+
+            if val.as_ref() != v.as_ref() {
+                return false;
+            }
+            map.remove(k.as_ref());
+        }
+
+        map.is_empty()
     }
 }
 
@@ -63,7 +76,6 @@ mod tests {
         let act = URL::new(url);
         assert_eq!(act.to_string(), "https://test.example.com");
     }
-
     #[test]
     fn should_build_url() {
         let url = "https://test.example.com/dev";
@@ -78,6 +90,10 @@ mod tests {
     fn should_compare_regardless_query_orders() {
         let url1 = URL::new("https://test.example.com?profile=test&country=USA");
         let url2 = URL::new("https://test.example.com?country=USA&profile=test");
+        let url3 = URL::new("https://test.example.com?country=USA&profile=Test");
+        let url4 = URL::new("https://test.example.com?country=USA&profile=test&a=2");
         assert_eq!(url1, url2);
+        assert_ne!(url1, url3);
+        assert_ne!(url1, url4);
     }
 }
