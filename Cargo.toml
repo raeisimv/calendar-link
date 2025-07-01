@@ -1,12 +1,12 @@
 [package]
 name = "calendar-link"
-version = "0.0.6"
+version = "0.0.7"
 edition = "2024"
 license = "MIT"
 readme = "README.md"
 authors = ["Morteza Raeisi Vanani <raeisimv@outlook.com>"]
 description = "Rust library to generate an event link for Google Calendar, Yahoo! Calendar, Microsoft Outlook, etc."
-keywords = ["Calendar-Link", "Google-Calendar", "iCalendar", "Outlook", "Office365"]
+keywords = ["Calendar-Link", "Google-Calendar", "iCalendar", "Outlook", "Office-365"]
 categories = ["accessibility", "web-programming", "value-formatting"]
 repository = "https://github.com/raeisimv/calendar-link.git"
 
