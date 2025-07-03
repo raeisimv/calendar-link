@@ -48,9 +48,9 @@ mod tests {
     fn should_provide_ical_calendar_link() {
         let snapshot = read_snapshot();
         let models = generate_models();
-        let mut cases = snapshot.get("ical").unwrap().into_iter();
+        let mut cases = snapshot.get("iCal").unwrap().into_iter();
         for (i, evt) in models.iter().enumerate() {
-            let act = ical(evt).expect("cannot parse ical event");
+            let act = ical(evt).expect("cannot parse iCal event");
             let exp = cases.next().expect("sequence contains no elements");
             assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
         }

@@ -81,11 +81,19 @@ mod tests {
     fn should_provide_outlook_calendar_link() {
         let snapshot = read_snapshot();
         let models = generate_models();
-        let mut cases = snapshot.get("outlook").unwrap().into_iter();
-        for (i, evt) in models.iter().enumerate() {
-            let act = outlook(evt).expect("cannot parse outlook event");
-            let exp = cases.next().expect("sequence contains no elements");
-            assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
+        for x in ["outlook", "office365"] {
+            let mut cases = snapshot.get(x).unwrap().into_iter();
+            for (i, evt) in models.iter().enumerate() {
+                let Ok(act) = outlook(evt) else {
+                    panic!("cannot parse {x} event");
+                };
+                let exp = cases.next().expect("sequence contains no elements");
+                assert_eq!(
+                    act,
+                    URL::new(exp),
+                    "failed '{x}' at index {i}, evt: {evt:?}"
+                );
+            }
         }
     }
 }
