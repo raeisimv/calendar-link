@@ -2,13 +2,10 @@ use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
 pub fn google(event: &CalendarEvent) -> MyResult<URL> {
-    let mut p = vec![(Cow::Borrowed("action"), Cow::Borrowed("TEMPLATE"))];
-
-    if let Some(x) = &event.guests {
-        if !x.is_empty() {
-            p.push((Cow::Borrowed("add"), Cow::Owned(x.join(","))));
-        }
-    }
+    let mut p = vec![
+        (Cow::Borrowed("text"), Cow::Borrowed(event.title)),
+        (Cow::Borrowed("action"), Cow::Borrowed("TEMPLATE")),
+    ];
 
     let dates = {
         let fmt_typ = if event.is_all_day() {
@@ -30,11 +27,13 @@ pub fn google(event: &CalendarEvent) -> MyResult<URL> {
     if let Some(x) = event.r_rule {
         p.push((Cow::Borrowed("recur"), Cow::Owned(format!("RRULE:{}", x))));
     }
-
-    p.push((Cow::Borrowed("text"), Cow::Borrowed(event.title)));
-
     if let Some(x) = event.busy {
         p.push((Cow::Borrowed("trp"), Cow::Owned(x.to_string())));
+    }
+    if let Some(x) = &event.guests {
+        if !x.is_empty() {
+            p.push((Cow::Borrowed("add"), Cow::Owned(x.join(","))));
+        }
     }
 
     URL::try_build(
