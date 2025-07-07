@@ -2,24 +2,24 @@ use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
 pub fn aol(event: &CalendarEvent) -> MyResult<URL> {
-    let mut p = vec![
-        (Cow::Borrowed("v"), Cow::Borrowed("60")),
-        (Cow::Borrowed("title"), Cow::Borrowed(event.title)),
-    ];
-
     let fmt_typ = if event.is_all_day() {
         EventTimeFormat::AllDay
     } else {
         EventTimeFormat::DateTimeUtc
     };
-    p.push((
-        Cow::Borrowed("st"),
-        Cow::Owned(event.start.format_as_string(fmt_typ)),
-    ));
-    p.push((
-        Cow::Borrowed("et"),
-        Cow::Owned(event.end_date().format_as_string(fmt_typ)),
-    ));
+
+    let mut p = vec![
+        (Cow::Borrowed("v"), Cow::Borrowed("60")),
+        (Cow::Borrowed("title"), Cow::Borrowed(event.title)),
+        (
+            Cow::Borrowed("st"),
+            Cow::Owned(event.start.format_as_string(fmt_typ)),
+        ),
+        (
+            Cow::Borrowed("et"),
+            Cow::Owned(event.end_date().format_as_string(fmt_typ)),
+        ),
+    ];
 
     if let Some(x) = event.desc {
         p.push((Cow::Borrowed("desc"), Cow::Borrowed(x)));
