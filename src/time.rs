@@ -8,6 +8,11 @@ pub enum EventTime {
     Local(DateTime<Local>),
 }
 
+pub fn get_timestamp() -> String {
+    Utc::now()
+        .format(EventTimeFormat::DateTimeUtc.as_ref())
+        .to_string()
+}
 impl EventTime {
     #[cfg(test)]
     pub fn fixed_utc_time() -> DateTime<Utc> {
