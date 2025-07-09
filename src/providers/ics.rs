@@ -49,6 +49,31 @@ pub fn ics(event: &CalendarEvent) -> MyResult<URL> {
         p.push((Cow::Borrowed("RRULE"), Cow::Borrowed(x)));
     }
 
+    p.extend_from_slice(&[
+        (
+            Cow::Borrowed("SUMMARY"),
+            Cow::Owned(sanitized_text(event.title)),
+        ),
+        (
+            Cow::Borrowed("DESCRIPTION"),
+            Cow::Owned(sanitized_text(event.desc.unwrap_or_default())),
+        ),
+        (
+            Cow::Borrowed("LOCATION"),
+            Cow::Owned(sanitized_text(event.location.unwrap_or_default())),
+        ),
+        // (
+        //     Cow::Borrowed("ORGANIZER"),
+        //     Cow::Owned(sanitized_text(event.organizer.unwrap_or_default())),
+        // ),
+        // (
+        //     Cow::Borrowed("STATUS"),
+        //     Cow::Owned(sanitized_text(event.stat.unwrap_or_default())),
+        // ),
+        // (Cow::Borrowed("UID"), Cow::Owned("rnd".into())),
+        (Cow::Borrowed("END"), Cow::Borrowed("VEVENT")),
+        (Cow::Borrowed("END"), Cow::Borrowed("VCALENDAR")),
+    ]);
 
     URL::try_build(
         "https://calendar.ical.com",
@@ -56,7 +81,7 @@ pub fn ics(event: &CalendarEvent) -> MyResult<URL> {
     )
 }
 
-fn escape_text(text: &str) -> String {
+fn sanitized_text(text: &str) -> String {
     text.replace(",", ",")
         .replace(";", ";")
         .replace("\r\n", "\n")
