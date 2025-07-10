@@ -2,7 +2,7 @@ use crate::time::get_timestamp;
 use crate::{err::MyResult, time::EventTimeFormat, typ::CalendarEvent, url::URL};
 use std::borrow::Cow;
 
-pub fn ics(event: &CalendarEvent) -> MyResult<URL> {
+pub fn ics(event: &CalendarEvent) -> MyResult<String> {
     let fmt_typ = if event.is_all_day() {
         EventTimeFormat::AllDay
     } else {
@@ -62,10 +62,7 @@ pub fn ics(event: &CalendarEvent) -> MyResult<URL> {
             Cow::Borrowed("LOCATION"),
             Cow::Owned(sanitized_text(event.location.unwrap_or_default())),
         ),
-        // (
-        //     Cow::Borrowed("ORGANIZER"),
-        //     Cow::Owned(sanitized_text(event.organizer.unwrap_or_default())),
-        // ),
+        (Cow::Borrowed("ORGANIZER"), Cow::Borrowed("")),
         // (
         //     Cow::Borrowed("STATUS"),
         //     Cow::Owned(sanitized_text(event.stat.unwrap_or_default())),
@@ -75,10 +72,20 @@ pub fn ics(event: &CalendarEvent) -> MyResult<URL> {
         (Cow::Borrowed("END"), Cow::Borrowed("VCALENDAR")),
     ]);
 
-    URL::try_build(
-        "https://calendar.ical.com",
-        p.iter().map(|(x, y)| (x.as_ref(), y.as_ref())),
-    )
+    let x = p
+        .into_iter()
+        .map(|(k, v)| {
+            if k == "ORGANIZER"
+                && let Some(x) = &event.organizer
+            {
+                format!("ORGANIZER;CN={}:MAILTO:{}\r\n", x.name, x.email)
+            } else {
+                format!("{k}:{v}\r\n")
+            }
+        })
+        .collect::<String>();
+
+    Ok(format!("data:text/calendar;charset=utf8,{x}"))
 }
 
 fn sanitized_text(text: &str) -> String {
