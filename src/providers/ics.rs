@@ -96,20 +96,20 @@ fn sanitized_text(text: &str) -> String {
     // .replace(/(\\n)[\s\t]+/gm, "\\n"); // TODO: impl this regex
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use crate::providers::__snapshot__::{generate_models, read_snapshot};
-//
-//     #[test]
-//     fn should_provide_ical_calendar_link() {
-//         let snapshot = read_snapshot();
-//         let models = generate_models();
-//         let mut cases = snapshot.get("iCal").unwrap().into_iter();
-//         for (i, evt) in models.iter().enumerate() {
-//             let act = ics(evt).expect("cannot parse iCal event");
-//             let exp = cases.next().expect("sequence contains no elements");
-//             // assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
-//         }
-//     }
-// }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::providers::__snapshot__::{generate_models, read_snapshot};
+
+    #[test]
+    fn should_provide_ical_calendar_link() {
+        let snapshot = read_snapshot();
+        let models = generate_models();
+        let mut cases = snapshot.get("iCal").unwrap().into_iter();
+        for (i, evt) in models.iter().enumerate() {
+            let act = ics(evt).expect("cannot parse iCal event");
+            let exp = cases.next().expect("sequence contains no elements");
+            // assert_eq!(act, URL::new(exp), "failed at index {i}, evt: {evt:?}");
+        }
+    }
+}
