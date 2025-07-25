@@ -9,7 +9,7 @@ pub fn ics(event: &CalendarEvent) -> MyResult<String> {
         EventTimeFormat::DateTimeUtc
     };
 
-    let mut params = vec![
+    let mut dic = vec![
         (Cow::Borrowed("BEGIN"), Cow::Borrowed("VCALENDAR")),
         (Cow::Borrowed("VERSION"), Cow::Borrowed("2.0")),
         (
@@ -19,9 +19,9 @@ pub fn ics(event: &CalendarEvent) -> MyResult<String> {
         (Cow::Borrowed("BEGIN"), Cow::Borrowed("VEVENT")),
     ];
     if let Some(x) = event.url {
-        params.push((Cow::Borrowed("URL"), Cow::Borrowed(x)));
+        dic.push((Cow::Borrowed("URL"), Cow::Borrowed(x)));
     }
-    params.extend_from_slice(&[
+    dic.extend_from_slice(&[
         (
             Cow::Borrowed("DTSTART"),
             Cow::Owned(event.start.format_as_string(fmt_typ)),
@@ -33,7 +33,7 @@ pub fn ics(event: &CalendarEvent) -> MyResult<String> {
         (Cow::Borrowed("DTSTAMP"), Cow::Owned(get_timestamp())),
     ]);
     if event.is_all_day() {
-        params.extend_from_slice(&[
+        dic.extend_from_slice(&[
             (
                 Cow::Borrowed("X-MICROSOFT-CDO-ALLDAYEVENT"),
                 Cow::Borrowed("TRUE"),
@@ -46,10 +46,10 @@ pub fn ics(event: &CalendarEvent) -> MyResult<String> {
     }
 
     if let Some(x) = event.r_rule {
-        params.push((Cow::Borrowed("RRULE"), Cow::Borrowed(x)));
+        dic.push((Cow::Borrowed("RRULE"), Cow::Borrowed(x)));
     }
 
-    params.extend_from_slice(&[
+    dic.extend_from_slice(&[
         (
             Cow::Borrowed("SUMMARY"),
             Cow::Owned(sanitized_text(event.title)),
@@ -72,7 +72,7 @@ pub fn ics(event: &CalendarEvent) -> MyResult<String> {
         (Cow::Borrowed("END"), Cow::Borrowed("VCALENDAR")),
     ]);
 
-    let x = params
+    let x = dic
         .into_iter()
         .map(|(k, v)| {
             if k == "ORGANIZER"
