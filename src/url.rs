@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, fmt::Display};
 use url::Url;
 
 /// ## URL wrapper type
-/// This wrapper provide common functionalities for generating and comparing URLs
+/// This wrapper abstracts common functionalities for generating and comparing URLs.
 ///
 #[derive(Clone, Debug)]
 pub struct URL {
