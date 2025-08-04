@@ -25,10 +25,10 @@ impl URL {
         base: S,
         params: impl Iterator<Item = (S, S)>,
     ) -> MyResult<Self> {
-        let x = Url::parse_with_params(base.as_ref(), params.into_iter())?.to_string();
-        let url = x.trim_end_matches('?').to_string();
-
-        Ok(Self { url })
+        let url_string = Url::parse_with_params(base.as_ref(), params.into_iter())?.to_string();
+        Ok(Self {
+            url: url_string.trim_end_matches('?').to_string(),
+        })
     }
 }
 
