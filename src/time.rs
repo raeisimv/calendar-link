@@ -47,15 +47,12 @@ impl Default for EventTime {
 }
 impl Display for EventTime {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-        if self.is_utc() {
-            write!(f, "{}", self.format_as_string(EventTimeFormat::DateTimeUtc))
+        let val = if self.is_utc() {
+            self.format_as_string(EventTimeFormat::DateTimeUtc)
         } else {
-            write!(
-                f,
-                "{}",
-                self.format_as_string(EventTimeFormat::DateTimeLocal)
-            )
-        }
+            self.format_as_string(EventTimeFormat::DateTimeLocal)
+        };
+        write!(f, "{val}")
     }
 }
 
